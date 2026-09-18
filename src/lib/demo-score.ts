@@ -15,6 +15,14 @@ function createNote(stringIndex: number, fret: number): ScoreNote {
   };
 }
 
+function createDeadNote(stringIndex: number): ScoreNote {
+  return {
+    stringIndex,
+    fret: 0,
+    technique: 'dead-note',
+  };
+}
+
 function createMeasure(measureIndex: number): ScoreMeasure {
   const chordNames = [
     ['Am7', 'Fmaj7', 'C', 'G'],
@@ -29,21 +37,51 @@ function createMeasure(measureIndex: number): ScoreMeasure {
     };
   });
 
-  const riff: Array<[number, number, number]> = [
-    [0, 5, 0],
-    [2, 5, 3],
-    [4, 4, 2],
-    [6, 4, 3],
-    [8, 3, 2],
-    [10, 4, 3],
-    [12, 4, 2],
-    [14, 5, 3],
-  ];
+  const chordVoicings: Record<string, ReadonlyArray<number | null>> = {
+    Am7: [0, 1, 0, 2, 0, null],
+    Fmaj7: [0, 1, 2, 3, 3, null],
+    C: [0, 1, 0, 2, 3, null],
+    G: [3, 0, 0, 0, 2, 3],
+    Gsus4: [3, 1, 0, 0, 1, 3],
+  };
+  const arpeggioStrings = [5, 3, 2, 1, 0, 2, 3, 4, 3, 2, 1, 0, 2, 3, 4, 5];
 
-  if (measureIndex < 2) {
-    riff.forEach(([beatIndex, stringIndex, fret]) => {
-      beats[beatIndex]?.notes.push(createNote(stringIndex, fret));
-    });
+  beats.forEach((beat, beatIndex) => {
+    const chord = beat.chord;
+    const voicing = chord ? chordVoicings[chord] : undefined;
+    if (!voicing) {
+      return;
+    }
+
+    if (beatIndex % 4 === 0) {
+      voicing.forEach((fret, stringIndex) => {
+        if (fret === null) {
+          beat.notes.push(createDeadNote(stringIndex));
+        } else {
+          beat.notes.push(createNote(stringIndex, fret));
+        }
+      });
+      return;
+    }
+
+    const arpeggioString = arpeggioStrings[beatIndex] ?? 0;
+    const arpeggioFret = voicing[arpeggioString];
+    if (arpeggioFret === null) {
+      beat.notes.push(createDeadNote(arpeggioString));
+    } else if (arpeggioFret !== undefined) {
+      beat.notes.push(createNote(arpeggioString, arpeggioFret));
+    }
+  });
+
+  if (measureIndex === 2) {
+    beats[0].notes = [
+      createDeadNote(5),
+      createDeadNote(4),
+      createNote(3, 2),
+      createNote(2, 2),
+      createNote(1, 1),
+      createNote(0, 0),
+    ];
   }
 
   return {

@@ -25,6 +25,7 @@ import {
   X,
 } from 'lucide-react';
 import {
+  Fragment,
   useCallback,
   useEffect,
   useMemo,
@@ -47,7 +48,6 @@ import type {
   ScoreMeasure,
 } from '@/lib/score-types';
 
-const stringLabels = ['e', 'B', 'G', 'D', 'A', 'E'];
 const stringNames = ['1弦 · E', '2弦 · B', '3弦 · G', '4弦 · D', '5弦 · A', '6弦 · E'];
 const openStringMidi = [64, 59, 55, 50, 45, 40];
 const fretOptions = Array.from({ length: 25 }, (_, index) => index);
@@ -1271,7 +1271,6 @@ export default function EditorWorkspace() {
                       measureIndex={measureIndex}
                       selectedCell={selectedCell}
                       playhead={playhead}
-                      stringLabels={stringLabels}
                       onCellClick={handleScoreCellClick}
                     />
                   ))}
@@ -1650,7 +1649,6 @@ interface MeasureGridProps {
   measureIndex: number;
   selectedCell: CellPosition | null;
   playhead: { measureIndex: number; beatIndex: number };
-  stringLabels: string[];
   onCellClick: (position: CellPosition) => void;
 }
 
@@ -1659,45 +1657,92 @@ function MeasureGrid({
   measureIndex,
   selectedCell,
   playhead,
-  stringLabels,
   onCellClick,
 }: MeasureGridProps) {
+  const chordChanges = measure.beats.reduce<Array<{ beatIndex: number; chord: string }>>(
+    (changes, beat, beatIndex) => {
+      if (beat.chord && changes.at(-1)?.chord !== beat.chord) {
+        changes.push({ beatIndex, chord: beat.chord });
+      }
+      return changes;
+    },
+    [],
+  );
+
   return (
-    <div className="measure-grid">
+    <section className="measure-grid" aria-label={`${measureIndex + 1} 小节 TAB`}>
       <div className="measure-number">{measureIndex + 1}</div>
       <div className="chord-row" aria-label={`${measureIndex + 1} 小节和弦`}>
-        {measure.beats.map((beat) => (
-          <div className="chord-slot" key={`${beat.id}-chord`}>
-            {beat.chord && <ChordDiagram chord={beat.chord} />}
-            {beat.chord && <span>{beat.chord}</span>}
+        {chordChanges.map(({ beatIndex, chord }) => (
+          <div
+            className="chord-slot"
+            key={`${measure.id}-${beatIndex}-chord`}
+            style={{ gridColumn: beatIndex + 1 }}
+          >
+            <span className="chord-name">{chord}</span>
+            <ChordDiagram chord={chord} />
           </div>
         ))}
       </div>
-      <div className="beat-grid">
+      <div className="rhythm-row" aria-hidden="true">
         {measure.beats.map((beat, beatIndex) => (
-          <div
-            className={`beat-column ${beatIndex % 4 === 0 ? 'strong-beat' : ''} ${beatIndex % 4 === 3 ? 'beat-group-end' : ''} ${beat.notes.length ? 'has-rhythm' : ''} ${playhead.measureIndex === measureIndex && playhead.beatIndex === beatIndex ? 'playing-beat' : ''}`}
-            key={beat.id}
-          >
+          <div className="rhythm-cell" key={`${beat.id}-rhythm`}>
             {beat.notes.length > 0 && (
               <>
+                <span className="rhythm-notehead" />
                 <span className="rhythm-stem" />
-                <span className="rhythm-beam rhythm-beam-first" />
-                <span className="rhythm-beam rhythm-beam-second" />
+                {beatIndex % 4 !== 0 && <span className="rhythm-flag" />}
               </>
             )}
-            {stringLabels.map((label, stringIndex) => {
-              const note = beat.notes.find(
-                (item) => item.stringIndex === stringIndex,
-              );
+          </div>
+        ))}
+        {Array.from({ length: 4 }, (_, groupIndex) => {
+          const hasNotes = measure.beats
+            .slice(groupIndex * 4, groupIndex * 4 + 4)
+            .some((beat) => beat.notes.length > 0);
+          return hasNotes ? (
+            <Fragment key={`${measure.id}-beam-${groupIndex}`}>
+              <span
+                className="rhythm-beam rhythm-beam-first"
+                style={{ gridColumn: `${groupIndex * 4 + 1} / span 4` }}
+              />
+              <span
+                className="rhythm-beam rhythm-beam-second"
+                style={{ gridColumn: `${groupIndex * 4 + 1} / span 4` }}
+              />
+            </Fragment>
+          ) : null;
+        })}
+      </div>
+      <div className="measure-beat-lines" aria-hidden="true">
+        {[4, 8, 12].map((beatIndex) => (
+          <span
+            className="measure-beat-line"
+            key={`${measure.id}-bar-${beatIndex}`}
+            style={{ gridColumn: beatIndex + 1 }}
+          />
+        ))}
+      </div>
+      <div className="tab-system">
+        {Array.from({ length: 6 }, (_, stringIndex) => (
+          <span className="tab-string-line" key={`${measure.id}-line-${stringIndex}`} />
+        ))}
+        <div className="tab-grid">
+          {measure.beats.map((beat, beatIndex) =>
+            Array.from({ length: 6 }, (_, stringIndex) => {
+              const note = beat.notes.find((item) => item.stringIndex === stringIndex);
               const isSelected =
                 selectedCell?.measureIndex === measureIndex &&
                 selectedCell.beatIndex === beatIndex &&
                 selectedCell.stringIndex === stringIndex;
+              const isPlaying =
+                playhead.measureIndex === measureIndex &&
+                playhead.beatIndex === beatIndex;
               return (
                 <button
-                  className={`string-cell ${isSelected ? 'selected' : ''} ${note ? 'has-note' : ''}`}
+                  className={`string-cell ${isSelected ? 'selected' : ''} ${isPlaying ? 'playing' : ''} ${note ? 'has-note' : ''}`}
                   key={`${beat.id}-${stringIndex}`}
+                  style={{ gridColumn: beatIndex + 1, gridRow: stringIndex + 1 }}
                   onClick={() =>
                     onCellClick({
                       measureIndex,
@@ -1705,29 +1750,28 @@ function MeasureGrid({
                       stringIndex,
                     })
                   }
-                  aria-label={`${measureIndex + 1} 小节，第 ${beatIndex + 1} 拍，${label} 弦`}
+                  aria-label={`${measureIndex + 1} 小节，第 ${beatIndex + 1} 个十六分音符，第 ${stringIndex + 1} 弦`}
                 >
-                  <span className="string-line" />
-                  {note && <span className="note-value">{note.fret}</span>}
                   {note && (
-                    <span className="note-duration" aria-hidden="true">
-                      <span />
-                      <span />
+                    <span className="note-value">
+                      {getTabNoteSymbol(note)}
                     </span>
                   )}
-                  {note && note.technique !== 'normal' && (
-                    <span className="note-technique">
-                      {getTechniqueGlyph(note.technique)}
-                    </span>
+                  {note && note.technique !== 'normal' && note.technique !== 'dead-note' && (
+                    <span className="note-technique">{getTechniqueGlyph(note.technique)}</span>
                   )}
                 </button>
               );
-            })}
-          </div>
-        ))}
+            }),
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   );
+}
+
+function getTabNoteSymbol(note: { fret: number; technique: NoteTechnique }): string {
+  return note.technique === 'dead-note' ? 'x' : String(note.fret);
 }
 
 function getTechniqueGlyph(technique: NoteTechnique): string {

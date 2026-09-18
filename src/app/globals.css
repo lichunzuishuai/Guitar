@@ -1602,6 +1602,615 @@ kbd {
   color: #222222;
 }
 
+/* TAB 排版最终层：所有节奏、和弦与弦上事件使用同一时间列。 */
+.measure-grid {
+  min-height: 194px;
+  padding-top: 48px;
+  padding-bottom: 22px;
+}
+
+.measure-grid::before,
+.measure-grid::after {
+  top: 48px;
+  bottom: 22px;
+  z-index: 5;
+}
+
+.measure-beat-lines {
+  position: absolute;
+  z-index: 4;
+  top: 48px;
+  right: 0;
+  bottom: 22px;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  pointer-events: none;
+}
+
+.measure-beat-line {
+  width: 1px;
+  height: 100%;
+  background: #777777;
+}
+
+.rhythm-row {
+  top: 8px;
+  height: 36px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.rhythm-cell {
+  height: 36px;
+}
+
+.rhythm-notehead {
+  top: 1px;
+  width: 10px;
+  height: 8px;
+  background: #ffffff;
+  border-color: #111111;
+}
+
+.rhythm-stem {
+  top: 1px;
+  height: 25px;
+}
+
+.rhythm-flag {
+  top: 19px;
+}
+
+.rhythm-beam {
+  position: absolute;
+  right: 7px;
+  left: calc(6.25% + 7px);
+  height: 2px;
+  margin: 0;
+  background: #111111;
+}
+
+.rhythm-beam-first {
+  top: 7px;
+}
+
+.rhythm-beam-second {
+  top: 12px;
+}
+
+.tab-system {
+  z-index: 2;
+  height: 126px;
+}
+
+.tab-string-line:nth-child(1) { top: 0; }
+.tab-string-line:nth-child(2) { top: 25px; }
+.tab-string-line:nth-child(3) { top: 50px; }
+.tab-string-line:nth-child(4) { top: 75px; }
+.tab-string-line:nth-child(5) { top: 100px; }
+.tab-string-line:nth-child(6) { top: 125px; }
+
+.tab-grid {
+  grid-template-rows: repeat(6, 25px);
+}
+
+.string-cell {
+  min-height: 25px;
+  font-size: 14px;
+}
+
+.note-value {
+  min-width: 20px;
+  height: 19px;
+  font-weight: 600;
+}
+
+.note-technique {
+  top: -14px;
+}
+
+@media (max-width: 720px) {
+  .measure-grid {
+    min-width: 760px;
+  }
+}
+
+/* Keep empty TAB cells transparent when the editor selection is active. */
+.tab-grid .string-cell.selected,
+.tab-grid .string-cell.playing {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* TAB final pass: keep the score system continuous after legacy theme overrides. */
+.notation-wrap {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 92px;
+}
+
+.staff-gutter {
+  justify-content: flex-start;
+  padding-top: 70px;
+}
+
+.clef {
+  display: none;
+}
+
+.tab-mark {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.measure-grid {
+  min-width: 760px;
+  min-height: 186px;
+  margin-bottom: 86px;
+  padding: 44px 0 20px;
+  border: 0;
+}
+
+.measure-grid::before,
+.measure-grid::after {
+  top: 44px;
+  bottom: 20px;
+  width: 2px;
+  background: #111111;
+}
+
+.measure-number {
+  top: 26px;
+  left: 0;
+}
+
+.chord-row {
+  top: -60px;
+  right: 0;
+  left: 0;
+  height: 62px;
+}
+
+.chord-slot {
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 50%;
+}
+
+.chord-name {
+  display: block;
+  color: #111111;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.chord-slot > .mini-chord-diagram {
+  width: 38px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  transform: translateX(-50%);
+}
+
+.rhythm-row {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  height: 34px;
+}
+
+.rhythm-cell {
+  position: relative;
+  height: 34px;
+}
+
+.rhythm-notehead {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 9px;
+  height: 7px;
+  border: 1.5px solid #111111;
+  border-radius: 50%;
+  transform: translateX(-50%) rotate(-20deg);
+}
+
+.rhythm-stem {
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 4px);
+  width: 1px;
+  height: 22px;
+  background: #111111;
+}
+
+.rhythm-flag {
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 4px);
+  width: 10px;
+  height: 7px;
+  border-top: 2px solid #111111;
+  border-radius: 0 80% 0 0;
+  transform: skewY(28deg);
+}
+
+.rhythm-beam {
+  align-self: start;
+  height: 3px;
+  margin: 5px 4px 0;
+  background: #111111;
+  z-index: 2;
+}
+
+.tab-system {
+  position: relative;
+  height: 122px;
+}
+
+.tab-string-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: #111111;
+}
+
+.tab-string-line:nth-child(1) { top: 0; }
+.tab-string-line:nth-child(2) { top: 24px; }
+.tab-string-line:nth-child(3) { top: 48px; }
+.tab-string-line:nth-child(4) { top: 72px; }
+.tab-string-line:nth-child(5) { top: 96px; }
+.tab-string-line:nth-child(6) { top: 120px; }
+
+.tab-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-rows: repeat(6, 24px);
+}
+
+.string-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 24px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  color: #111111;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.note-value {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: auto;
+  min-width: 19px;
+  height: 18px;
+  padding: 0 2px;
+  place-items: center;
+  color: #111111;
+  background: #ffffff;
+  border-radius: 0;
+  line-height: 1;
+}
+
+.string-cell:hover .note-value,
+.string-cell.selected .note-value {
+  color: #ffffff;
+  background: #111111;
+}
+
+.string-cell.selected,
+.string-cell.playing {
+  background: transparent;
+  box-shadow: none;
+}
+
+.string-cell.selected:not(.has-note)::after {
+  width: 6px;
+  height: 6px;
+  content: '';
+  background: #111111;
+  border-radius: 50%;
+}
+
+.note-technique {
+  position: absolute;
+  z-index: 3;
+  top: -13px;
+  left: 50%;
+  color: #111111;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  transform: translateX(-50%);
+}
+
+/* 标准 TAB 排版：节奏层、和弦层和六根连续弦线共享同一组十六分音符列。 */
+.notation-wrap {
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 92px;
+}
+
+.staff-gutter {
+  justify-content: flex-start;
+  padding-top: 70px;
+}
+
+.clef {
+  display: none;
+}
+
+.tab-mark {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.measure-list {
+  display: block;
+}
+
+.measure-grid {
+  position: relative;
+  min-width: 760px;
+  min-height: 186px;
+  margin-bottom: 86px;
+  padding: 44px 0 20px;
+  border: 0;
+}
+
+.measure-grid::before,
+.measure-grid::after {
+  top: 44px;
+  bottom: 20px;
+  width: 2px;
+  background: #111111;
+}
+
+.measure-grid::before {
+  left: 0;
+}
+
+.measure-grid::after {
+  right: 0;
+}
+
+.measure-number {
+  top: 26px;
+  left: 0;
+  font-size: 10px;
+}
+
+.chord-row {
+  top: -60px;
+  right: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  height: 62px;
+}
+
+.chord-slot {
+  gap: 4px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-left: 50%;
+}
+
+.chord-name {
+  display: block;
+  color: #111111;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chord-slot > .mini-chord-diagram {
+  width: 38px;
+  height: 44px;
+  transform: translateX(-50%);
+}
+
+.chord-slot > .chord-name {
+  transform: translateX(-50%);
+}
+
+.mini-chord-diagram {
+  border: 0;
+  background: transparent;
+}
+
+.chord-nut {
+  top: 0;
+  height: 2px;
+}
+
+.chord-string {
+  background: #555555;
+}
+
+.chord-fret {
+  background: #777777;
+}
+
+.chord-dot {
+  width: 8px;
+  height: 8px;
+}
+
+.rhythm-row {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  height: 34px;
+}
+
+.rhythm-cell {
+  position: relative;
+  height: 34px;
+}
+
+.rhythm-notehead {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 9px;
+  height: 7px;
+  border: 1.5px solid #111111;
+  border-radius: 50%;
+  transform: translateX(-50%) rotate(-20deg);
+}
+
+.rhythm-stem {
+  position: absolute;
+  top: 2px;
+  left: calc(50% + 4px);
+  width: 1px;
+  height: 22px;
+  background: #111111;
+}
+
+.rhythm-flag {
+  position: absolute;
+  top: 18px;
+  left: calc(50% + 4px);
+  width: 10px;
+  height: 7px;
+  border-top: 2px solid #111111;
+  border-radius: 0 80% 0 0;
+  transform: skewY(28deg);
+}
+
+.rhythm-beam {
+  align-self: start;
+  height: 3px;
+  margin: 5px 4px 0;
+  background: #111111;
+  z-index: 2;
+}
+
+.tab-system {
+  position: relative;
+  height: 122px;
+}
+
+.tab-string-line {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: #111111;
+}
+
+.tab-string-line:nth-child(1) { top: 0; }
+.tab-string-line:nth-child(2) { top: 24px; }
+.tab-string-line:nth-child(3) { top: 48px; }
+.tab-string-line:nth-child(4) { top: 72px; }
+.tab-string-line:nth-child(5) { top: 96px; }
+.tab-string-line:nth-child(6) { top: 120px; }
+
+.tab-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-rows: repeat(6, 24px);
+}
+
+.string-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 24px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  color: #111111;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.note-value {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: auto;
+  min-width: 19px;
+  height: 18px;
+  padding: 0 2px;
+  place-items: center;
+  color: #111111;
+  background: #ffffff;
+  border-radius: 0;
+  line-height: 1;
+}
+
+.string-cell:hover .note-value,
+.string-cell.selected .note-value {
+  color: #ffffff;
+  background: #111111;
+}
+
+.string-cell.selected {
+  background: transparent;
+  box-shadow: none;
+}
+
+.string-cell.playing {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.string-cell.selected:not(.has-note)::after {
+  width: 6px;
+  height: 6px;
+  content: '';
+  background: #111111;
+  border-radius: 50%;
+}
+
+.note-technique {
+  position: absolute;
+  z-index: 3;
+  top: -13px;
+  left: 50%;
+  color: #111111;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  transform: translateX(-50%);
+}
+
+.score-footer {
+  margin-top: 46px;
+}
+
 .topbar,
 .transport {
   color: #f2f2f2;
@@ -2586,4 +3195,118 @@ kbd {
 
 .add-measure-button {
   color: #222222;
+}
+
+/* Final TAB layout override: the score is one shared time grid. */
+.measure-grid {
+  min-height: 194px;
+  padding-top: 48px;
+  padding-bottom: 22px;
+}
+
+.measure-grid::before,
+.measure-grid::after {
+  top: 48px;
+  bottom: 22px;
+  z-index: 5;
+}
+
+.measure-beat-lines {
+  position: absolute;
+  z-index: 4;
+  top: 48px;
+  right: 0;
+  bottom: 22px;
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  pointer-events: none;
+}
+
+.measure-beat-line {
+  width: 1px;
+  height: 100%;
+  background: #777777;
+}
+
+.rhythm-row {
+  top: 8px;
+  height: 36px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.rhythm-cell {
+  height: 36px;
+}
+
+.rhythm-notehead {
+  top: 1px;
+  width: 10px;
+  height: 8px;
+  background: #ffffff;
+  border-color: #111111;
+}
+
+.rhythm-stem {
+  top: 1px;
+  height: 25px;
+}
+
+.rhythm-flag {
+  top: 19px;
+}
+
+.rhythm-beam {
+  position: absolute;
+  right: 7px;
+  left: calc(6.25% + 7px);
+  height: 2px;
+  margin: 0;
+  background: #111111;
+}
+
+.rhythm-beam-first {
+  top: 7px;
+}
+
+.rhythm-beam-second {
+  top: 12px;
+}
+
+.tab-system {
+  z-index: 2;
+  height: 126px;
+}
+
+.tab-string-line:nth-child(1) { top: 0; }
+.tab-string-line:nth-child(2) { top: 25px; }
+.tab-string-line:nth-child(3) { top: 50px; }
+.tab-string-line:nth-child(4) { top: 75px; }
+.tab-string-line:nth-child(5) { top: 100px; }
+.tab-string-line:nth-child(6) { top: 125px; }
+
+.tab-grid {
+  grid-template-rows: repeat(6, 25px);
+}
+
+.string-cell {
+  min-height: 25px;
+  font-size: 14px;
+}
+
+.note-value {
+  min-width: 20px;
+  height: 19px;
+  font-weight: 600;
+}
+
+.note-technique {
+  top: -14px;
+}
+
+@media (max-width: 720px) {
+  .measure-grid {
+    min-width: 760px;
+  }
 }
